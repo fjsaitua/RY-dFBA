@@ -1,17 +1,12 @@
 clear all
 initCobraToolbox
 model_PP = readCbModel('iFS670.xml');
-model_PP = modelConstraints(model_PP);
 
 KOgenes = [ 308 133 646 668 669 348 298 571 ...
             572 455 599 67 101 167 338 533 ...
             632 460 435 266 582 652 389 20 ...
             144 179 340 463 314 188 257 433];
 
-
-%KOgenes = [534 652 398 461 641]; % Oxydative phosphorilarion and TCA
-%KOgenes = [299 436]; % Glycine and Serine Metabolism and Alanine/aspartate metabolism
-%KOgenes = [572 668]; % Non-Oxidative PPP
 
 cd metMoviesCurated_HSA
 
@@ -35,34 +30,23 @@ DynamicMOMAdata = dMOMA_DATA;
 nKOs = length(KOgenes)+1; % Parental + (nKOs-1) knock outs
 times = 1:nKOs;
 
-% metList = {'g6p[c]' 'pyr[c]' 'glu-L[c]' 'atp[c]' 'nadh[c]' 'nadph[c]'};
-% metIDs  = {'glucose 6 phosphate cyt balance' 'pyruvate cit balance' 'atp cyt balance' 'nadh cyt balance' 'nadph cyt balance'};
-
-% metList = {'atp[c]' 'nadh[c]' 'nadph[c]' 'atp[m]' 'nadh[m]' 'nadph[m]' 'glu-L[c]' 'oaa[c]' 'cit[m]' 'cys-L[c]' 'arg-L[c]' 'akg[m]' 'fum[m]' 'ala-L[c]' 'phe-L[c]' 'gly[c]' 'ser-L[c]'};
-
 metList = { 'ala-L[c]' 'arg-L[c]' 'asn-L[c]' 'asp-L[c]' 'cys-L[c]' 'glu-L[c]' ...
             'gln-L[c]' 'gly[c]' 'his-L[c]' 'ile-L[c]' 'leu-L[c]' 'lys-L[c]' 'met-L[c]' ...
             'phe-L[c]' 'pro-L[c]' 'ser-L[c]' 'trp-L[c]' 'tyr-L[c]' 'thr-L[c]' ...
             'val-L[c]'};
         
-%metList = { 'glu-L[c]' 'gln-L[c]' 'ser-L[c]' 'trp-L[c]' 'cys-L[c]' 'arg-L[c]'};
 
-       
-%metList = {'ptrc[c]' 'spmd[c]' 'for[c]' 'q6h2[m]'};
-        
-%metIDs  = {'Glutamate' 'Glutamine' 'Serine' 'Tryptophan' 'Cysteine' 'Arginine'};
-
-finalTau = zeros(nKOs,1);
+finalHSA = zeros(nKOs,1);
 finalBiom = zeros(nKOs,1);
 
 
 for i=1:nKOs
     if i==1
         finalBiom(i) = DynamicMOMAdata{1,end}(end,3);
-        finalTau(i) = DynamicMOMAdata{1,end}(end,9);
+        finalHSA(i) = DynamicMOMAdata{1,end}(end,9);
     else
         finalBiom(i) = DynamicMOMAdata{1,KOgenes(i-1)}(end,3);
-        finalTau(i) = DynamicMOMAdata{1,KOgenes(i-1)}(end,9);
+        finalHSA(i) = DynamicMOMAdata{1,KOgenes(i-1)}(end,9);
     end
 end
 
@@ -85,7 +69,7 @@ for i=1:length(times)
         metName = metList(j);
         
         % Production
-        [Totflux_P,SortRxnIDs_P,SortProdFlux_P] = printMajorFluxes(model_PP,metName,FLUX,N);
+        [Totflux_P,SortRxnIDs_P,SortProdFlux_P] = printMajorFluxes_Production(model_PP,metName,FLUX,N);
         % Consumption
         [Totflux_C,SortRxnIDs_C,SortProdFlux_C] = printMajorFluxes_Consumption(model_PP,metName,FLUX,N);
                
@@ -145,8 +129,8 @@ ylabel('g/L')
 set(gca,'XTickLabel',labels)
 ylim([0 22])
 subplot(1,2,2)
-title('Final Thaumatin')
-plot(1:nKOs,finalTau,'ok')
+title('Final HSA')
+plot(1:nKOs,finalHSA,'ok')
 ylabel('g/L')
 set(gca,'XTickLabel',labels)
 ylim([0 1])
