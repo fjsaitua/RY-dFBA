@@ -1,11 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% [t,x] = run_dFBA(dataset,k)
+% [t,x] = run_dFBA(k,x0,simTime,geneID,ifMOMA)
 % Simulates a batch or fed-batch run of the procedure, for a given set of
 % parameters.
 %
 % INPUTS:
-% dataset       Number indicating wich sheet will be analyzed
 % k             Parameter values
+% x0            Initial Conditions of the simulation
+% simTime       Time of the simulation
+% geneID        Index of the gene to be deleted
+% ifMOMA        1 if MOMA is going to be executed
 %
 % OUTPUTS:
 % t             Time vector of the simulation
@@ -14,7 +17,7 @@
 %               indicates (in [g/L])
 %
 % Benjamín J. Sánchez
-% Last Update: 2014-11-25
+% Last Update: 2016-12-22 Francisco Saitua
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [t,x] = run_PPdFBA(k,x0,simTime,geneID,expdata,ifMOMA)
@@ -27,9 +30,8 @@ changeCobraSolver('gurobi5','LP');
 changeCobraSolver('gurobi5','QP');
 
 % model
-model = readCbModel('PP_iFS618_3.xml');
-model = changeRxnBounds(model,'EX_o2(e)',-50,'l')
-model = modelConstraints(model);
+model = readCbModel('iFS670.xml');
+model = changeRxnBounds(model,'EX_o2(e)',-50,'l');
 
 % Apply singleGeneDeletion
 if isempty(geneID)==0 && isempty(ifMOMA)
@@ -81,8 +83,7 @@ if isempty(ifMOMA)
 else
     [t,x]=ode113(@pseudoSteadyState_simulationMOMA,[0 simTime],x0,odeoptions,k);
 end
-% Simtime discreto
-%[t,x]=ode113(@pseudoSteadyState,texp,x0,odeoptions,k);
+
 clear pseudoSteadyState
 
 %Show results

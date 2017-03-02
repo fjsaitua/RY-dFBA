@@ -1,7 +1,7 @@
 function O2 = get_O2_for_input_times(fluxDistrib,Exp_Times)
-% Interpola linealmente la tasa de generación para cada tiempo experimental
-% utilizando la película metabólica de la fermentación. Esto se hace debido
-% a que el solver no explora exactamente lo puntos experimentales.
+% Using the flux distribution during the culture and the sampling time, 
+% this script determines the instantaneous oxygen uptake rate for the 
+% different experimental times
 
 t_O2 = fluxDistrib(end,:);
 r_O2 = fluxDistrib(1318,:);

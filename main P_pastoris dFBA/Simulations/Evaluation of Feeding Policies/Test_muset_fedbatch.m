@@ -2,21 +2,21 @@ clear all % Sacar si quiero probar un k_best
 
 %% Parameter values
 
-k_param = [   2.3102; ...      % Vmax
-        0.9083;...       % Kg
-        0.5255;...     % pEtOH
-        0.0703;...    % pPyr
-        0.1174;...    % pArab
-        1.7082e-5;...    % pCit
-        1e-3;...       % pTau
-        -1.2;...   % pEtOH FED
-        -.4399;...   % pPyr FED
-        -.1233;...   % pArab FED
-        0;...       % pCit FED
-        5e-4;...       % pTau FED
-        1.1604e-5;...         % w F.O. Batch
-        2.0217e-6;...         % w F.O. FedBatch
-        2];             % m_atp
+k_param = [   2.3102; ...       % Vmax
+        0.9083;...              % Kg
+        0.5255;...              % pEtOH
+        0.0703;...              % pPyr
+        0.1174;...              % pArab
+        1.7082e-5;...           % pCit
+        1e-3;...                % pHSA
+        -1.2;...                % pEtOH FED
+        -.4399;...              % pPyr FED
+        -.1233;...              % pArab FED
+        0;...                   % pCit FED
+        5e-4;...                % pHSA FED
+        1.1604e-5;...           % w F.O. Batch
+        2.0217e-6;...           % w F.O. FedBatch
+        2];                     % m_atp
 
 %% Initial conditions
 x0 = [  0.5; ...    % Volume
@@ -26,15 +26,15 @@ x0 = [  0.5; ...    % Volume
         0.001; ...  % Pyruvate
         0.1; ...    % Arabitol
         0.0001; ... % Citrate
-        0];         % Thaumatine
+        0];         % HSAe
 
 
 %% Simulation
 Time1 = tic;
 odeTime = 0:2:100;
-mu_maxs = 0.15; % h^-1
-mu_rates = [0.07 0.5];
-mu_mins = 0.03;
+mu_maxs = [0.14 0.1]; % Number of maximum growth rates to be evaluated
+mu_rates = [0.07 0.01]; % Number of rates to be evaluated, how fast mu_max decreases to mumin
+mu_mins = [0.08 0.04]; % Number of minimum growth rates to be evaluated
 conditions = length(mu_maxs)*length(mu_rates)*length(mu_mins);
 simTimes = cell(conditions,1);
 simVariables = cell(conditions,1);
@@ -90,7 +90,7 @@ for i=1:length(mu_maxs)
             %% Plots
             figure(l)
             labels = {  'Volume' 'Biomass' 'Glucose' 'Ethanol' 'Pyruvate'...
-                        'Arabitol' 'Citrate' 'Thaumatin'};
+                        'Arabitol' 'Citrate' 'HSA'};
             for m=1:8
                 subplot(3,3,m)
                 plot(tWT,xWT(:,m))
@@ -111,19 +111,19 @@ optTime =toc(Time1);
 
 %% Calculation of performance indicators
 Final_Biomass   = zeros(conditions,1);
-Final_Thaumatin = zeros(conditions,1);
+Final_HSA = zeros(conditions,1);
 Volumetric_Prod = zeros(conditions,1);
 Biomass_Prod    = zeros(conditions,1);
 
 for i=1:conditions
     Final_Biomass(i)    = simVariables{i,1}(end,2);
-    Final_Thaumatin(i)  = simVariables{i,1}(end,8);
-    Volumetric_Prod(i)  = Final_Thaumatin(i)/simTimes{i,1}(end);
+    Final_HSA(i)  = simVariables{i,1}(end,8);
+    Volumetric_Prod(i)  = Final_HSA(i)/simTimes{i,1}(end);
     Biomass_Prod(i)     = Final_Biomass(i)/simTimes{i,1}(end);
 end
 
 save('Final_Biomass.mat','Final_Biomass')
-save('Final_Thaumatin.mat','Final_Thaumatin')
+save('Final_HSA.mat','Final_HSA')
 save('Volumetric_Prod.mat','Volumetric_Prod')
 save('Biomass_Prod.mat','Biomass_Prod')
 
