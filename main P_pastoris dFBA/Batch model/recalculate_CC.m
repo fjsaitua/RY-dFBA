@@ -12,7 +12,7 @@
 %               identifiability and significance problems.
 %
 % Benjamín J. Sánchez
-% Last update: 2014-11-29
+% Last update: 2016-12-22
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function cmp_group = recalculate_CC(filename,dataset)
@@ -36,7 +36,7 @@ changeCobraSolver('gurobi5','LP');
 changeCobraSolver('gurobi5','QP');
 
 % model
-model = readCbModel('PP_iFS618.xml');
+model = readCbModel('iFS670.xml');
 
 % excMet
 metNames ={ 'Volume' 'Biomass' 'glc-D[e]' 'etoh[e]'...
@@ -56,34 +56,18 @@ excRxn = [rxnIDs' zeros(size(rxnIDs'))];
 PM = [  0       0       180.16  46.07 ...
         88.06   152.14  192.124]./1000; % Pesos moleculares de los ácidos no ionizados
 
-% feed
-feed = [0 0 300 0 ...
-        0 0 0];   % 300 g/L glucose feed
 
 cd data
     expdata = xlsread(filename,dataset);
-    % Peso seco
-    DWRelation = 0.72;
-    expdata(:,3) = expdata(:,3)*DWRelation;
 cd ..
 
 % Initial conditions
 x0 = expdata(1,2:8);
-weights = expdata(:,9:15);
-
 texp    = expdata(:,1);
 ydata   = expdata(:,2:8);
 
-% weights(:,2) = 0.07*weights(:,2); % Privilegiar ajuste biomasa 
-% weights(:,3) = 0.13*weights(:,3); % Privilegiar ajuste glucosa
-% weights(:,4) = 0.15*weights(:,4); % Privilegiar ajuste etanol
-% weights(:,6) = 0.15*weights(:,5); % Privilegiar ajuste arabitol
-% weights(:,7) = 0.2*weights(:,6); % Privilegiar ajuste citrato
-% weights(:,8) = 0.07*weights(:,7); % Privilegiar ajuste taumatina
-
 assignin('base','texp',texp);
 assignin('base','ydata',ydata);
-assignin('base','weights',weights);
 assignin('base','model',model);
 assignin('base','excMet',excMet);
 assignin('base','excRxn',excRxn);

@@ -1,9 +1,12 @@
 function [X_Central,X_O2,X_CO2,RxnList,O2List,CO2List] = fluxMetCentral(model,x)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Function that recovers the central carbon metabolism fluxes of a flux
-% vector (result of a cobra optimization). The script is only useful for
-% the Pichia pastoris model developed by Chung et al. in 2009.
+% Function that returns the central carbon metabolism fluxes of a flux
+% vector or matrix (result of a cobra optimization at different time-points)
+% and the reactions associated to cytosolic and mitochondrial oxygen and 
+% cytosolic CO2. The script is only useful for the Pichia pastoris model 
+% developed by Chung et al. in 2009. But if the reaction names are changed,
+% it could be used to run flux distributions from other models
 %
 % In order to run this script, COBRA must be initialized.
 %
@@ -12,21 +15,28 @@ function [X_Central,X_O2,X_CO2,RxnList,O2List,CO2List] = fluxMetCentral(model,x)
 %   and i the number of time points considered) 
 % 
 % Output:
-%   X_Central = flux vector of the central metabolism. It only includes the
-%               fluxes of the Glycolysis/Gluconeogenesis, PPP, TCA,
-%               fermentative pathways, O2 and CO2 metabolism
+%   X_Central   =   flux vector of the central metabolism. It only includes the
+%                   fluxes of the Glycolysis/Gluconeogenesis, PPP, around the 
+%                   pyruvate node, the TCA and fermentative pathways
+%   X_O2        =   vector containing the fluxes associated to cytosolic and 
+%                   mitochondrial oxygen.
+%   X_CO2       =   vector containing the fluxes associated to cytosolic 
+%                   carbon dioxide.
+%   RxnList, O2List, CO2List    =   Vector containing the names of the
+%                                   reactions from the central, oxygen 
+%                                   and carbon dioxyde metabolism.
 %
-% Last update: Francisco Saitua 30-09-15
+% Last update: Francisco Saitua 2016-12-22
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % List of reaction indentificators
 
 GlycList = {'EX_glc(e)','GLCt1','GLUK','G6PI','G6PI3','HEX1','PGI','PFK',...
-            'FBA','TPI','GAPD','PGK','PGM','ENO','PYK','FBA3','PFK_3'};
+            'FBA','TPI','GAPD','PGK','PGM','ENO','PYK','FBA3','PFK_3'}; % Glycolytic reactions
         
 PPPList  = {'G6PDH2','PGL','GND','RPE','RPI','TKT1','TKT2','TALA','RIBK',...
-            'ABTDH','ABTt','ABTDt'}; 
+            'ABTDH','ABTt','ABTDt'}; % Pentose Phosphate Pathway reactions
 
 PyrFermList  = {'PYRt2m','D-LACt2m','PDHm','PC','OAAt2m',...
                 'PYRDC','ALCD2x','ALCD2if','ALCD2ir','ALDD2y',...

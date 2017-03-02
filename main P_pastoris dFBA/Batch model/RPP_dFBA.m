@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % RY_dFBA(dataset)
 % Main function to use, performs a complete analysis of the model for a
-% given dataset. STEP 3 OF THE PROCEDURE (SEE README.MD)
+% given dataset.
 %
 % INPUTS:
 % dataset       Number indicating wich sheet will be analyzed 
 %
 % Benjamín J. Sánchez
-% Last Update: 2014-11-29
+% Last Update: 2016 - 12 - 22 Francisco Saitua
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function RPP_dFBA(filename,dataset)
@@ -19,8 +19,8 @@ profile on % Start Profiler
 %    results from the iteration.
 
 % Parameter number
-
 K = 8;
+
 time1 = tic;
 iteration_complete(filename,dataset,NaN(1,K));
 t1 = toc(time1);

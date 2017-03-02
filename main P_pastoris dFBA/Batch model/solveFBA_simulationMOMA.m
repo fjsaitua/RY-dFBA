@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FBAsol = solveFBA(model,t,excRxn,p);
-% Solves the LP problem of finding the fluxes via FBA. Maximizes biomass
-% formation rate and minimizes absolute flux sum (Schuetz 2012).
+% FBAsol = solveFBA_simulationMOMA(model,t,excRxn,p);
+% Solves two sequential QP problems to find the fluxes of a single gene
+% deletion mutant using the minimization of metabolic adjustment as
+% objective function.
 %
 % INPUTS:
 % model     COBRA model used in the simulation
@@ -9,18 +10,19 @@
 % excRxn    Numeric matrix with the position in rxns of each
 %           exchange reaction (the first row (volume) has zeros)
 % p         Kinetic parameters
+% geneID    Index of the gene to be deleted
 % 
 % OUTPUT:
 % FBAsol    FBA solution
 %
-% Benjamín J. Sánchez
-% Last Update: 2014-11-28
+% Francisco Saitua
+% Last Update: 2016-12-22
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function FBAsol = solveFBA_simulationMOMA(model,t,excRxn,p,geneID)
 
 %Parameters used in solveFBA:
-w = p(8);
+w = p(8); % w=alpha
 
 % Minimize sum of absolut fluxes
 QPproblem.A             = model.S;
@@ -39,8 +41,8 @@ for i=1:length(model.mets) % N° mets
     QPproblem.csense(i,1) = 'E';            %Equality constraints for gnpk
 end
 
+% Determine the parental Flux distributions
 FBAsol_min       = solveCobraQP(QPproblem);
-%FBAsol_min.full(238)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,11 +51,14 @@ FBAsol_min       = solveCobraQP(QPproblem);
 
 if ~isempty(geneID)
     try
+    % Gene deletions    
     modelDel = model;
     [~,results] = findRxnsFromGenes(modelDel,modelDel.genes(geneID),[],1);
     modelDel = changeRxnBounds(modelDel,results(:,1),zeros(size(results(:,1))),'b');
     
-    % Redefinimos el problema de balance de flujos
+    % We write the MOMA objective function in its matrix form with the
+    % model with a single gene deletion.
+    
     QPproblem.F             = eye(N);
     QPproblem.ub            = modelDel.ub;
     QPproblem.lb            = modelDel.lb;
@@ -71,19 +76,19 @@ end
 
 fluxDistrib = [FBAsol.x;t];
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Metabolic Movie
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if t==0
-            save(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib')
-        else
-            if length(fluxDistrib)<1000
-                fluxDistrib = [zeros(length(model.rxns),1);fluxDistrib];
-            end
-            S = load(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib');
-            fluxDistrib = [S.fluxDistrib,fluxDistrib];
-            save(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib');
-        end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Metabolic Movie
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         if t==0
+%             save(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib')
+%         else
+%             if length(fluxDistrib)<1000
+%                 fluxDistrib = [zeros(length(model.rxns),1);fluxDistrib];
+%             end
+%             S = load(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib');
+%             fluxDistrib = [S.fluxDistrib,fluxDistrib];
+%             save(['metMovie_KO' num2str(geneID) '.mat'],'fluxDistrib');
+%         end
 
 end
 

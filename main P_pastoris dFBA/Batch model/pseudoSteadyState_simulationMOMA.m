@@ -1,6 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% dx = pseudoSteadyState(t,x,k)
-% Optimizes biomass using FBA, under the pseudo-steady state assumption
+% dx = pseudoSteadyState_simulationMOMA(t,x,k)
+% Optimizes biomass using FBA, under the pseudo-steady state assumption.
+% Script designed to run dynamic single gene deletion using the
+% minimization of metabolic adjustment as objective function.
 %
 % INPUTS:
 % t             Time of simulation [h]
@@ -11,8 +13,8 @@
 % OUTPUT:
 % dx            Derivatives of concentrations [g/Lh]
 %
-% Benjamín J. Sánchez
-% Last Update: 2014-11-23
+% Francisco Saitua
+% Last Update: 2016-12-22
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function dx = pseudoSteadyState_simulationMOMA(t,x,k) % cambié k por p ya que no estoy fijando nada 
@@ -21,7 +23,6 @@ model  = evalin('base','model');
 excMet = evalin('base','excMet');
 excRxn = evalin('base','excRxn');
 PM     = evalin('base','PM');
-% feed   = evalin('base','feed');
 kfixed = evalin('base','kfixed');
 geneID = evalin('base','geneID');
 
@@ -56,8 +57,6 @@ N  = length(excMet);
 dx = zeros(N,1);
 
 % Volume:
-%Fin   = feedFunction(t);
-%dx(1) = Fin;              %[L/h]
 dx(1) = 0;
 
 % Biomass:

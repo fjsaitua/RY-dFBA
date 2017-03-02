@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FBAsol = solveFBA(model,t,excRxn,p);
-% Solves the LP problem of finding the fluxes via FBA. Maximizes biomass
+% Solves a QP problem of finding the fluxes via FBA. Maximizes biomass
 % formation rate and minimizes absolute flux sum (Schuetz 2012).
 %
 % INPUTS:
@@ -13,8 +13,8 @@
 % OUTPUT:
 % FBAsol    FBA solution
 %
-% Benjamín J. Sánchez
-% Last Update: 2014-11-28
+% Francisco Saitua
+% Last Update: 2016-12-22
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function FBAsol = solveFBA(model,t,excRxn,p)
@@ -24,6 +24,7 @@ function FBAsol = solveFBA(model,t,excRxn,p)
 
 % Biobjetivo estática
 w = p(7);
+%w = p(8); % Activate if Running MOMA
 
 % Minimize sum of absolut fluxes
 QPproblem.A             = model.S;
@@ -53,6 +54,10 @@ FBAsol_min       = solveCobraQP(QPproblem);
 
 %Returns the QP solution:
 FBAsol.x = FBAsol_min.full;
+
+% To save the metabolic movie of the cultivation please uncomment the
+% following lines.
+
 % fluxDistrib = [FBAsol.x;t];
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,6 +73,7 @@ FBAsol.x = FBAsol_min.full;
 %             fluxDistrib = [S.fluxDistrib,fluxDistrib];
 %             save('metMovie.mat','fluxDistrib');
 %         end
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

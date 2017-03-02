@@ -12,7 +12,7 @@
 % dx            Derivatives of concentrations [g/Lh]
 %
 % Benjamín J. Sánchez
-% Last Update: 2014-11-23
+% Last Update: 2016-12-22 Francisco Saitua
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function dx = pseudoSteadyState(t,x,k) % cambié k por p ya que no estoy fijando nada 
@@ -66,7 +66,6 @@ for q = 3:N
     v     = -FBAsol.x(j)*model.S(i,j);              %[mmol/gDWh]
     dx(q) = v*PM(q)*x(2); %[g/Lh]
 end
-
 
 skip_delays = evalin('base','skip_delays');
 persistent odetime

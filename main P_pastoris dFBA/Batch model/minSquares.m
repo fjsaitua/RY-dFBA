@@ -13,7 +13,6 @@ function [J,g,R] = minSquares(k,texp,yexp)
 
 %Integrate:
 x0         = evalin('base','x0');
-weights    = evalin('base','weights');
 odeoptions = odeset('RelTol',1e-5,'AbsTol',1e-5,'MaxStep',3,'NonNegative',1:length(x0));
 
 try
@@ -33,8 +32,7 @@ clear pseudoSteadyState
 
 
 % Checks the dimensions of the experimental and model data, apart it checks
-% that the model doesn't give a ¿? constant solution // Cambié nmod por
-% mmod en el tercer término de la condición
+% that the model doesn't give a constant solution 
 
 if mmod == mexp && nmod == nexp && sum(abs(ymod(1,:)-ymod(mmod,:))) ~= 0
     R = ymod-yexp;
@@ -44,7 +42,7 @@ end
 
 
 for i = 1:7 % Number of state variables
-    R(:,i) = R(:,i)./(max(yexp(:,i))*weights(:,i)); % Debería haber un *weights(i) multiplicando el denominador
+    R(:,i) = R(:,i)./max(yexp(:,i)); % Debería haber un *weights(i) multiplicando el denominador
 end
 
 [m,n] = size(R);

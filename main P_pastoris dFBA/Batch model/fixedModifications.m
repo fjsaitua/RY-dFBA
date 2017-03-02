@@ -17,7 +17,9 @@
 function model = fixedModifications(model,p)
 
 %Parameters used in fixedModifications:
-vATP =  p(8);    % NGAM
+vATP =  p(8);    % NGAM De-Activate if running MOMA
+
+%vATP =  p(9);    % NGAM Activate if running MOMA
 
 %ATP maintenance requirements:
 model = changeRxnBounds(model,'ATPM',vATP,'l');

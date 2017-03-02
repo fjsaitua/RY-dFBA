@@ -13,8 +13,8 @@
 % OUTPUT:
 % model     COBRA model used in the simulation (changed)
 %
-% Benjamín J. Sánchez
-% Last Update: 2014-11-23
+% Francisco Saitua
+% Last Update: 2016-12-22
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function model = kineticConstraints(model,t,x,excRxn,p)
@@ -26,6 +26,7 @@ pEtOH = p(3);   % Ethanol specific production rate [fraction of glucose consumpt
 pPyr  = p(4);   % Glucose pyruvate minimum yield BATCH
 pArab = p(5);   % Glucose arabitol minimum yield BATCH
 pCit  = p(6);   % Glucose citrate minimum yield BATCH
+%pHSA  = p(7);   % Glucose HSA Minimum yield, activate if running dynamic MOMA
 
 %Glucose uptake, with inhibition by ethanol
 G  = x(3);      % Glucose [g/L]
@@ -34,7 +35,6 @@ Cit = x(7);
 if G < 1e-3
     v = 0;
 else
-    % v = vmax*G/(Kg+G)/(1+E/Ke);   %[mmol/gDWh]
     v = vmax*G/(Kg+G);
 end
 
@@ -44,9 +44,12 @@ model = changeRxnBounds(model,model.rxns(excRxn(4,1)),pEtOH,'l'); % Proportional
 model = changeRxnBounds(model,model.rxns(excRxn(5,1)),pPyr,'l');
 model = changeRxnBounds(model,model.rxns(excRxn(6,1)),pArab,'l'); % Proportional to glucose consumption
 
+
 if Cit > 1e-3 % Use only when citrate is being consumed
     model = changeRxnBounds(model,model.rxns(excRxn(7,1)),-pCit,'l');
 end
+ 
+%model = changeRxnBounds(model,model.rxns(excRxn(8,1)),pHSA,'l'); % Activate if running MOMA
 
 end
 

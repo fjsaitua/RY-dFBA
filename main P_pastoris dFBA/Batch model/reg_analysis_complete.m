@@ -15,7 +15,6 @@ assignin('base','skip_delays',false);
 %Load experimental data:
 texp    = evalin('base','texp');
 yexp    = evalin('base','ydata');
-weights = evalin('base','weights');
 
 %Eliminate rows with NaN in any measurement:
 [N,n]    = size(yexp);
@@ -32,11 +31,6 @@ texp(NaN_rows,:) = [];
 yexp(NaN_rows,:) = [];
 
 simTime = texp(length(texp));
-
-%Normalize data with maximum measures:
-% for i = 1:8
-%     yexp(:,i) = yexp(:,i)./(max(yexp(:,i))*weights(:,i));
-% end
 
 %Jacobian and residual calculations using lsqcurvefit:
 kL = k.*0.9999999999;
@@ -80,11 +74,11 @@ end
 
 %Identifiability analysis:
 x0 = evalin('base','x0');
-Mc = identificaBSB(1:7,k,x0,[0 simTime],@pseudoSteadyState,0.95,1);
+Mc = identificaBSB(1:7,k,x0,[0 simTime],@pseudoSteadyState,0.95,1); % Considers the state variables 1 to 7
 
 %Sensitivity analysis:
 close all
-ksensibilidadBSB(1:7,k,x0,[0 simTime],@pseudoSteadyState,3,1);
+ksensibilidadBSB(1:7,k,x0,[0 simTime],@pseudoSteadyState,3,1); % Considers the state variables 1 to 7
 Ms = load('GraficoBarra.txt');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

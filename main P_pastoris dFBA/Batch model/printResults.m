@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % printResults(t,x,expdata)
-% Displays the model simulation & experimental results in a 2x2 graph.
+% Displays the model simulation & experimental results in a 2x3 graph.
 %
 % INPUTS:
 % t             Time vector
