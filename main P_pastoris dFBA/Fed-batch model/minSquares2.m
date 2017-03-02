@@ -12,7 +12,6 @@ function ymod = minSquares2(k,texp)
 %Integrate:
 x0         = evalin('base','x0');
 yexp       = evalin('base','ydata');
-weights    = evalin('base','weights');
 odeoptions = odeset('RelTol',1e-3,'AbsTol',1e-3,'MaxStep',0.7,'NonNegative',1:length(x0));
 try
     Time1 = tic;
@@ -27,11 +26,6 @@ catch exception
 end
 
 clear pseudoSteadyState
-
-%Return simulation output, appropiately weighted:
-% for i = 1:8
-%     ymod(:,i) = ymod(:,i)./(max(yexp(:,i))*weights(:,i));
-% end
 
 [m,n] = size(ymod);
 for i = 1:m

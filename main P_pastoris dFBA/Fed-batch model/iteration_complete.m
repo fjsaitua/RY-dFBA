@@ -56,8 +56,6 @@ feed = [0 0 500 0 ...
         0 0 0];   % 300 g/L glucose feed
     
 % Time when the feeding starts
-%t_feed  = 23.9; % 8B
-
 t_feeds = [30.63 26 23.9 29.88];
 t_feed  = t_feeds(dataset);
 
@@ -91,8 +89,8 @@ ParamValues =  [1       4.2           10; ... % 1.- Vmax glucose uptake [mmol/gD
                 0       0.2         0.3;  ... % 8.- Glucose-pyruvate minimum yield FEDBATCH
                 0       0.1         0.2;  ... % 9.- Glucose-arabitol minimum yield FEDBATCH
                 0       0.005       0.05;  ... % 10.- Glucose-citrate minimum yield FEDBATCH
-                0       3.9e-5      5e-4;  ... % 11.- Parámetro 'a' función objetivo BATCH
-                0       2.4e-5      5e-4; ... % 12.- Parámetro 'a' función objetivo FEDBATCH
+                0       3.9e-5      5e-4;  ... % 11.- Suboptimal growth coefficient alpha BATCH
+                0       2.4e-5      5e-4; ... % 12.- Suboptimal growth coefficient alpha FEDBATCH
                 0       .2907       10; ... % 13.- Maintenance ATP
                22       25          27]; % 14.- Time where substrate consumption starts
                 
@@ -120,14 +118,11 @@ opts.local.finish = 'lsqnonlin';
 %========================== DATA EXPERIMENTAL ============================
 % Read experimental data
 % 23 muestras 8A
-n_samples = [22 24 23 21];
+n_samples = [22 24 22 21];
 cd data
     NUM = xlsread(filename,dataset);
     expdata = NUM(1:n_samples(dataset),1:8);
-    weights = NUM(1:n_samples(dataset),9:15);
-    % Peso seco
-    DWRelation = 0.72;
-    expdata(:,3) = expdata(:,3)*DWRelation;
+    
 cd ..
 
 % Initial conditions
@@ -138,8 +133,7 @@ ydata   = expdata(:,2:end);
 assignin('base','x0',x0);
 assignin('base','texp',texp);
 assignin('base','ydata',ydata);
-assignin('base','weights',weights);
-% assignin('base','Vout',expdata(:,1:2));
+
 
 %================================== OPTIMIZATION =========================
 

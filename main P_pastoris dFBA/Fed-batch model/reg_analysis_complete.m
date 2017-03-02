@@ -15,7 +15,6 @@ assignin('base','skip_delays',false);
 %Load experimental data:
 texp    = evalin('base','texp');
 yexp    = evalin('base','ydata');
-weights = evalin('base','weights');
 
 %Eliminate rows with NaN in any measurement:
 [N,n]    = size(yexp);
@@ -33,10 +32,6 @@ yexp(NaN_rows,:) = [];
 
 simTime = texp(length(texp));
 
-% %Normalize data with maximum measures:
-% for i = 1:8
-%     yexp(:,i) = yexp(:,i)./(max(yexp(:,i))*weights(:,i));
-% end
 
 %Jacobian and residual calculations using lsqcurvefit:
 kL = k.*0.9999999999;

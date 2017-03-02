@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% it_results = iteration_complete(dataset,kfixed)
+% it_results = iteration_complete_valid(dataset,kfixed)
 % Does a complete iteration of the procedure, including parameter
 % estimation and all the pre/post-regression analysis metrics.
 %
@@ -119,23 +119,17 @@ opts.local.finish = 'lsqnonlin';
 n_samples = [22 24 23 21];
 cd data
     NUM = xlsread(filename,dataset);
-    expdata = NUM(1:n_samples(dataset),1:9);
-    weights = NUM(1:n_samples(dataset),10:17);
-    % Peso seco
-    DWRelation = 0.72;
-    expdata(:,3) = expdata(:,3)*DWRelation;
+    expdata = NUM(1:n_samples(dataset),1:8);
 cd ..
 
 % Initial conditions
 x0 = expdata(1,2:end);
 texp    = expdata(:,1);
 ydata   = expdata(:,2:end);
-weights(:,2) = 0.5*weights(:,2);
 
 assignin('base','x0',x0);
 assignin('base','texp',texp);
 assignin('base','ydata',ydata);
-assignin('base','weights',weights);
 
 %================================== OPTIMIZATION =========================
 

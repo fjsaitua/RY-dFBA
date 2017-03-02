@@ -36,7 +36,7 @@ changeCobraSolver('gurobi5','LP');
 changeCobraSolver('gurobi5','QP');
 
 % model
-model = readCbModel('PP_iFS618.xml');
+model = readCbModel('iFS670.xml');
 
 % excMet
 metNames ={ 'Volume' 'Biomass' 'glc-D[e]' 'etoh[e]'...
@@ -60,19 +60,10 @@ PM = [  0       0       180.16  46.07 ...
 feed = [0 0 500 0 ...
         0 0 0];   % 300 g/L glucose feed
 
-% cd data
-% data = load(['d' num2str(dataset) '.mat'],'model','excMet','excRxn','x0','feed','PM','expdata','trans','weights');
-% cd ..
-
-
 
 cd data
     NUM = xlsread(filename,dataset);
     expdata = NUM(1:22,1:8);
-    weights = NUM(1:22,9:15);
-    % Peso seco
-    DWRelation = 0.72;
-    expdata(:,3) = expdata(:,3)*DWRelation;
 cd ..
 
 % Initial conditions
@@ -83,16 +74,12 @@ ydata   = expdata(:,2:end);
 
 assignin('base','texp',texp);
 assignin('base','ydata',ydata);
-assignin('base','weights',weights);
 assignin('base','model',model);
 assignin('base','excMet',excMet);
 assignin('base','excRxn',excRxn);
 assignin('base','x0',x0);
 assignin('base','feed',feed);
 assignin('base','PM',PM);
-%assignin('base','Vout',data.expdata(:,1:2));
-%assignin('base','dataset',dataset);
-%assignin('base','trans',data.trans);
 assignin('base','skip_delays',false);
 
 for i = 1:m

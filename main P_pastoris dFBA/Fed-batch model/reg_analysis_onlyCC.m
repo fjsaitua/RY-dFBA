@@ -24,7 +24,6 @@ k(find(~isnan(kfixed))) = [];
 %Load experimental data:
 texp    = evalin('base','texp');
 yexp    = evalin('base','ydata');
-weights = evalin('base','weights');
 
 %Eliminate rows with NaN in any measurement:
 [N,n]    = size(yexp);
@@ -39,11 +38,6 @@ end
 NaN_rows = find(NaN_rows);
 texp(NaN_rows,:) = [];
 yexp(NaN_rows,:) = [];
-
-%Normalize data with maximum measures:
-for i = 1:7
-    yexp(:,i) = yexp(:,i)./(max(yexp(:,i))*weights(i));
-end
 
 %Jacobian and residual calculations using lsqcurvefit:
 kL = k.*0.9999999999;
