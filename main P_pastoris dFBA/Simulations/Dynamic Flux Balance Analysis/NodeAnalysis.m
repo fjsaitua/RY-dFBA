@@ -1,14 +1,35 @@
 clear all
+
+% Determines and presents as graph bars the fluxes producing and consuming 
+% a certain metabolite, in order to build flux distributions
+
 initCobraToolbox
-model_PP = readCbModel('PP_iFS618.xml');
-model_PP = modelConstraints(model_PP);
+model_PP = readCbModel('iFS670.xml');
 indexes = findRxnIDs(model_PP,{'EX_o2(e)' 'BIOMASS'});
-load('metMovie_FB_valid.mat')
+load('metMovie_FB_example.mat')
 
-times = [20 28 35 45];
+% Fermentation times to be analyzed
+times = [20 27.5 45];
 
-metList = {'g6p[c]' 'pyr[c]' 'atp[c]' 'nadh[c]' 'nadph[c]'};
-metIDs  = {'glucose 6 phosphate cyt balance' 'pyruvate cit balance' 'atp cyt balance' 'nadh cyt balance' 'nadph cyt balance'};
+
+% Metabolite (Node) list to be studied
+metList = { 'atp[c]' 'nadph[c]' 'nadh[c]' 'glc-D[c]' 'g6p[c]' ...
+            'pyr[c]' 'ru5p-D[c]' 'pep[c]' 'oaa[c]' 'oaa[m]' ...
+            'acald[c]' 'etoh[c]' 'abt_D[c]' 'cit[c]' 'akg[m]' ...
+            'cit[m]' 'accoa[m]' 'pyr[m]' 'mal-L[c]' 'mal-L[m]' ...
+            'akg[c]' 'co2[e]' 'o2[e]' 'g3p[c]' 'r5p[c]' ...
+            'fum[m]' 'f6p[c]' 'glu-L[m]' 'dhap[c]' 'ac[c]' ...
+            'icit[c]' 'icit[m]' 'co2[c]' 'co2[m]'};
+
+
+
+metIDs  = { 'atp cit' 'nadph cit' 'nadh cit' 'glc cit' 'g6p cyt' ...
+            'pyr cit' 'ribu5P cit' 'pep cit' 'oaa cit' 'oaa mit' ...
+            'acald cit' 'etoh cit' 'abt_D cit' 'cit cit' 'akg mit' ...
+            'cit mit' 'accoa mit' 'pyr mit' 'mal cit' 'mal mit'...
+            'akg cit' 'co2' 'o2' 'glyc3p cit' 'r5p cit' ...
+            'fum mit' 'f6p cit' 'glu-L mit' 'dhap cit' 'ac cit'...
+            'icit cyt' 'icit mit' 'co2 cit' 'co2 mit'};
 
 Results_Prod = cell(length(metList),length(times));
 Results_Cons = cell(length(metList),length(times));
@@ -30,7 +51,7 @@ for i=1:length(times)
         metName = metList(j);
         
         % Production
-        [Totflux_P,SortRxnIDs_P,SortProdFlux_P] = printMajorFluxes(model_PP,metName,FLUX,N);
+        [Totflux_P,SortRxnIDs_P,SortProdFlux_P] = printMajorFluxes_Production(model_PP,metName,FLUX,N);
         % Consumption
         [Totflux_C,SortRxnIDs_C,SortProdFlux_C] = printMajorFluxes_Consumption(model_PP,metName,FLUX,N);
                
@@ -38,7 +59,6 @@ for i=1:length(times)
         Results_Prod{j,i} = {Totflux_P SortRxnIDs_P SortProdFlux_P};
         Results_Cons{j,i} = {Totflux_C SortRxnIDs_C SortProdFlux_C};
         
-        display(['mu = ' num2str(FLUX(238)) 'h-1'])
     end
 end
 %% Stacked Bar Plot
@@ -66,24 +86,24 @@ for i=1:length(metList)
     xlim([0 length(times)+1])
 end
 
-%% Write node information in excel
-for i=1:length(metList)
-    
-        filename = strcat(metIDs{i},' Balance.xlsx');
-        Data_P = Results_Prod(i,:);
-        Data_C = Results_Cons(i,:);
-        writePieChartData(filename,Data_P,times,model_PP,3)
-        writePieChartData(filename,Data_C,times,model_PP,length(times)+3) 
-        
-        % Write graph information in the first page two sheets
-        cd('C:\Users\Francisco\Dropbox\RPP_dFBA_fed-batch\Cofactor Pie Charts')
-        % Production
-        xlswrite(filename,RxnIDs_P{i,1},1,'A1')
-        xlswrite(filename,Fluxes_P{i,1}',1,'B1')
-        % Consumption
-        xlswrite(filename,RxnIDs_C{i,1},2,'A1')
-        xlswrite(filename,Fluxes_C{i,1}',2,'B1')
-        cd ..
-        
-end
+% %% Write node information in excel
+% for i=1:length(metList)
+%     
+%         filename = strcat(metIDs{i},' Balance.xlsx');
+%         Data_P = Results_Prod(i,:);
+%         Data_C = Results_Cons(i,:);
+%         writePieChartData(filename,Data_P,times,model_PP,3)
+%         writePieChartData(filename,Data_C,times,model_PP,length(times)+3) 
+%         
+%         % Write graph information in the first page two sheets
+%         cd('C:\Users\Francisco\Dropbox\RPP_dFBA_fed-batch\Cofactor Pie Charts')
+%         % Production
+%         xlswrite(filename,RxnIDs_P{i,1},1,'A1')
+%         xlswrite(filename,Fluxes_P{i,1}',1,'B1')
+%         % Consumption
+%         xlswrite(filename,RxnIDs_C{i,1},2,'A1')
+%         xlswrite(filename,Fluxes_C{i,1}',2,'B1')
+%         cd ..
+%         
+% end
 
